@@ -47,7 +47,7 @@ export default function AuthCallback() {
             if (userResponse.ok) {
               const userData = await userResponse.json();
               localStorage.setItem('auth_user', JSON.stringify(userData));
-              loginWithToken({ token, user: userData, success: true });
+              loginWithToken({ token, user: userData, message: 'Authentication successful' });
             }
           } catch (e) {
             console.error('Error decoding token:', e);

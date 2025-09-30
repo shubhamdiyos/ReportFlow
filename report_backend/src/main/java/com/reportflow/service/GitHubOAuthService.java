@@ -32,12 +32,13 @@ public class GitHubOAuthService {
     @Value("${github.api.base-url}")
     private String githubApiBaseUrl;
     
+    @Value("${spring.security.oauth2.client.registration.github.redirect-uri}")
+    private String redirectUri;
+    
     private final RestTemplate restTemplate = new RestTemplate();
     
     public String generateAuthUrl() {
         String scope = "read:user user:email read:org repo";
-        // Frontend callback URL - update this for production
-        String redirectUri = "http://localhost:5173/auth/callback";
         
         return String.format("%s/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=random_state",
                 githubOAuthBaseUrl, clientId, redirectUri, scope);

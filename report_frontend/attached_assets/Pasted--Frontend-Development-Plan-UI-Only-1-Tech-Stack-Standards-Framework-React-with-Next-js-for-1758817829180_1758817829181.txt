@@ -1,0 +1,246 @@
+🔹 Frontend Development Plan (UI-Only)
+1. Tech Stack & Standards
+
+Framework: React (with Next.js for SSR/SSG).
+
+Language: TypeScript.
+
+Styling: Tailwind CSS.
+
+UI Components: shadcn/ui + lucide-react icons.
+
+Charts: Recharts.
+
+Animations: Framer Motion.
+
+State Management: React Query (server state), Zustand (optional local state).
+
+Routing: Next.js App Router.
+
+Form Handling: React Hook Form + Zod validation.
+
+Accessibility: ARIA roles, keyboard navigation, WCAG 2.1 AA compliance.
+
+2. Global UI Layout
+
+App Shell (used across pages):
+
+Sidebar Navigation (collapsible, role-based).
+
+Top Navbar (search, notifications, profile menu).
+
+Main Content Area (grid-based, scrollable).
+
+Dark/Light theme toggle (persisted in local storage).
+
+3. Screens / Pages
+3.1 Authentication & Onboarding
+
+Login Page → GitHub OAuth button.
+
+Org Onboarding → steps: Install GitHub App → Select Repos → Confirm Setup.
+
+Role Assignment → org admin assigns roles (developer, manager, admin).
+
+3.2 Dashboard (Org-level)
+
+KPIs (cards): Total commits, PRs, Issues, Reports generated this month.
+
+Charts: Contributions over time (line chart), Top contributors (bar chart).
+
+Quick actions: “Generate Report,” “View Reports,” “Manage Repos.”
+
+3.3 Team View
+
+List of teams (cards with avatars, activity stats).
+
+Drill-down → team contributions summary.
+
+Charts:
+
+PRs merged per developer.
+
+Bug fixes vs Features ratio.
+
+3.4 Developer View
+
+Profile header (avatar, name, GitHub link).
+
+Monthly summary (AI-generated).
+
+Timeline of contributions (commits, PRs, issues).
+
+Charts: Commits vs Reviews, LOC changes.
+
+3.5 Report Viewer
+
+Header: Report title, date range, report type.
+
+Tabs:
+
+Summary (AI text).
+
+Detailed Contributions (PRs, Issues, Commits).
+
+Charts & Stats.
+
+Actions: Export (PDF, DOCX, Markdown), Share link, Regenerate (with AI detail level).
+
+3.6 Repo Management
+
+Repo list with toggle (include/exclude).
+
+Filters: visibility (private/public), tags.
+
+Repo activity preview (last synced, contributors).
+
+3.7 Scheduling & Notifications
+
+Settings page → configure auto-report schedule (weekly, monthly).
+
+Notification settings: email, Slack, Teams toggle.
+
+3.8 Admin Console
+
+GitHub App status (connected/not connected).
+
+API usage stats.
+
+Failed jobs / sync errors with retry.
+
+Billing section (usage, AI token costs).
+
+3.9 Settings
+
+Org branding (logo upload, theme color).
+
+Report templates (select layout, customize summary tone).
+
+Data retention policies.
+
+4. Core UI Components
+
+SidebarNav
+
+TopNavbar
+
+Card (KPI, Summary, Team)
+
+ChartContainer (wrappers for Recharts)
+
+ReportCard (list of generated reports)
+
+DateRangePicker
+
+RepoSelector
+
+UserSelector
+
+ExportModal
+
+NotificationToast
+
+LoadingSkeletons
+
+ErrorBoundary
+
+5. State & Data Handling
+
+All API calls via React Query with caching + retry.
+
+Global user/org context from JWT (auth).
+
+Loading states: skeleton loaders for tables/charts.
+
+Error states: friendly error messages + retry buttons.
+
+6. UX Enhancements
+
+AI Summaries show with “typing” animation (Framer Motion).
+
+Copy-to-clipboard buttons for report links.
+
+Drill-down with breadcrumbs.
+
+Inline filtering + search on tables.
+
+Mobile-first: collapsible sidebar, bottom nav on small screens.
+
+🔹 AI Agent Prompt (Frontend Specification)
+
+You can paste this prompt to your AI agent to generate the complete UI codebase:
+
+Prompt for AI Agent (Frontend Development)
+
+You are tasked with building the complete frontend UI for a GitHub Month-End Reporting Platform. Use React + Next.js (TypeScript) with Tailwind CSS, shadcn/ui components, lucide-react icons, Recharts for charts, and Framer Motion for animations.
+
+Requirements:
+1. Global Layout
+
+Create an App Shell with:
+
+Sidebar Navigation (role-based items: Dashboard, Teams, Developers, Reports, Repos, Settings, Admin).
+
+Top Navbar with search bar, notifications, profile menu.
+
+Dark/Light theme toggle.
+
+Responsive: sidebar collapses on mobile; bottom nav on small screens.
+
+2. Pages
+
+Auth: Login with GitHub button, Onboarding wizard (Install GitHub App → Select Repos → Assign Roles).
+
+Dashboard (Org): KPI cards, line chart of contributions, bar chart of top contributors, quick actions.
+
+Teams: Grid of team cards; drill-down shows contributions, charts, summaries.
+
+Developers: Profile page with avatar, GitHub link, AI-generated summary, timeline of contributions, charts.
+
+Reports: List of reports with filters (by type/date). Report Viewer with tabs (Summary, Details, Charts). Actions: Export (PDF, DOCX, MD), Share link, Regenerate with AI.
+
+Repos: Repo list with toggles (include/exclude), activity preview.
+
+Scheduling: Settings for auto-report schedules (weekly/monthly), notification toggles (Email, Slack, Teams).
+
+Admin: GitHub App status, API usage, failed sync logs, billing (AI token costs).
+
+Settings: Branding (logo upload, theme), report template selection, data retention policies.
+
+3. Components
+
+Card, ChartContainer, ReportCard, DateRangePicker, RepoSelector, UserSelector, ExportModal, NotificationToast, LoadingSkeletons, ErrorBoundary.
+
+All charts via Recharts (bar, line, pie).
+
+Tables with pagination, filtering, search (shadcn/ui DataTable).
+
+Toasts for success/error notifications.
+
+4. Styling & UX
+
+Use Tailwind for spacing/typography.
+
+Rounded-2xl cards, soft shadows.
+
+Animations (Framer Motion) for sidebar transitions, AI summary typing effect.
+
+Accessible: ARIA labels, keyboard navigation.
+
+5. State Management
+
+Use React Query for API calls and caching.
+
+Handle loading with skeletons; handle errors gracefully.
+
+User/org info stored in global context.
+
+6. Deliverables
+
+Fully functional Next.js app with routing.
+
+All pages, components, layouts implemented.
+
+Placeholder APIs (mock data) for now; backend will be integrated later.
+
+Code should be modular, production-ready, clean.

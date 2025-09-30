@@ -1,0 +1,131 @@
+Enhance the existing GitHub Reporting Tool frontend by adding a Report Generation Wizard and improving the Reports Page with Details and Charts tabs.
+
+1. Report Generation Wizard (Modal / Stepper)
+
+Triggered by:
+
+"Generate Report" button on Dashboard.
+
+"Generate Report" button on Reports Page.
+
+Step 1: Select Report Type
+
+Options: Developer Report, Team Report, Organization Report
+
+Radio buttons with description under each.
+
+Step 2: Select Time Period
+
+Predefined options: This Month, Last Month, Custom Range.
+
+Date picker for custom.
+
+Step 3: Select Repositories & Contributors
+
+Multi-select dropdown for repositories.
+
+Multi-select for contributors (fetch from GitHub org users).
+
+Show badges for selected items.
+
+Step 4: Confirmation
+
+Summary of selections (type, period, repos, contributors).
+
+"Generate Report" button (primary CTA).
+
+UI Specs:
+
+Use Stepper UI (shadcn/ui or custom).
+
+Show progress indicator at top (Step 1 → 4).
+
+Close button (top-right).
+
+Loading state after final confirmation.
+
+2. Reports Page Enhancements
+
+Tabs: Summary | Details | Charts
+(currently only Summary is done).
+
+🔹 Summary Tab (already implemented)
+
+Executive Summary (AI text).
+
+KPI cards (Code Contributions, PRs, Code Reviews).
+
+🔹 Details Tab (to add)
+
+Section 1: Developer Contributions
+
+Table with: Developer | Commits | PRs | Reviews | Issues Closed.
+
+Section 2: Repo Breakdown
+
+Table with: Repo Name | Commits | PRs | Issues Closed.
+
+Section 3: Highlights
+
+List of "Top 5 Achievements" (fetched via AI backend later).
+
+🔹 Charts Tab (to add)
+
+Commit Activity Chart → Line chart (commits per week/day).
+
+PR Distribution Chart → Pie/Donut chart (PRs per repo).
+
+Workload Distribution → Bar chart (commits by developer).
+
+Trend Comparison → Line chart comparing this month vs last month.
+
+3. Other Features
+
+Export Options (Enhancement)
+
+Current "Export" button → replace with dropdown:
+
+PDF
+
+DOCX
+
+HTML
+
+Regenerate Report Button
+
+Confirmation modal → "Regenerate will replace the current version of this report."
+
+Share Button
+
+Dropdown with: Share via Email, Share to Slack, Copy Link.
+
+4. UI/UX Considerations
+
+Keep design consistent with Dashboard style (rounded cards, clean layout).
+
+Make tabs sticky (always visible while scrolling).
+
+Add loading skeletons for Details + Charts tabs.
+
+Empty states (e.g., "No chart data for this period").
+
+5. Technical Notes
+
+Use React Router nested routes for tabs (/reports/:id/summary, /details, /charts).
+
+Use Recharts for all chart visualizations.
+
+Use React Query with mock APIs (/api/reports/:id/details, /api/reports/:id/charts).
+
+Ensure responsiveness (mobile: tabs collapse into dropdown).
+
+👉 Deliverable:
+Update the frontend project with:
+
+Report Wizard Modal (4-step flow).
+
+Reports Page with Details + Charts tabs fully functional.
+
+Export dropdown, Regenerate modal, Share dropdown.
+
+Mock API integration for now (to be connected with backend later).

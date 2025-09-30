@@ -17,12 +17,13 @@ mvnw.cmd
 *~
 
 # Node / NPM
-node_modules/
+**/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-dist/
+**/dist/
 .cache/
+package-lock.json
 
 # Environment variables
 .env

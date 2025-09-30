@@ -30,9 +30,26 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         configuration.setAllowCredentials(allowCredentials);
-        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
+        
+        // Parse and set allowed origins
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOriginPatterns(origins);
+        
+        // Set allowed methods
         configuration.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
-        configuration.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+        
+        // Set allowed headers
+        if ("*".equals(allowedHeaders)) {
+            configuration.addAllowedHeader("*");
+        } else {
+            configuration.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+        }
+        
+        // Expose headers for JWT
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        
+        // Set max age for preflight
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

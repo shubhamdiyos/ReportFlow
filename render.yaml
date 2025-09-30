@@ -19,8 +19,8 @@ services:
     healthCheckPath: /api/auth/health
     
   # PostgreSQL Database
-  - type: pgsql
-    name: reportflow-db
+databases:
+  - name: reportflow-db
     databaseName: reportflow
     user: reportflow_user
     plan: free

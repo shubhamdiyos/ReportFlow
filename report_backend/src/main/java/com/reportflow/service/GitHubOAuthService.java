@@ -36,8 +36,8 @@ public class GitHubOAuthService {
     
     public String generateAuthUrl() {
         String scope = "read:user user:email read:org repo";
-        // Frontend callback URL (Spring Boot serves frontend on same port)
-        String redirectUri = "http://localhost:8080/auth/callback";
+        // Frontend callback URL - update this for production
+        String redirectUri = "http://localhost:5173/auth/callback";
         
         return String.format("%s/authorize?client_id=%s&redirect_uri=%s&scope=%s&state=random_state",
                 githubOAuthBaseUrl, clientId, redirectUri, scope);

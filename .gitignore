@@ -66,4 +66,3 @@ report_backend/src/main/resources/static/index.html
 
 # Sensitive data
 application-local.properties
-application-prod.properties

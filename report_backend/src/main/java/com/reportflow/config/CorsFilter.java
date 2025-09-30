@@ -1,0 +1,54 @@
+package com.reportflow.config;
+
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+@Component
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class CorsFilter implements Filter {
+
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
+        
+        HttpServletResponse response = (HttpServletResponse) res;
+        HttpServletRequest request = (HttpServletRequest) req;
+        
+        String origin = request.getHeader("Origin");
+        
+        // Allow localhost on any port and production URL
+        if (origin != null && (origin.startsWith("http://localhost:") || 
+                                origin.startsWith("http://127.0.0.1:") ||
+                                origin.equals("https://reportflow-c6lz.onrender.com"))) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
+        
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", 
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization, " +
+                "Access-Control-Request-Method, Access-Control-Request-Headers");
+        response.setHeader("Access-Control-Expose-Headers", "Authorization, Content-Type");
+        
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            chain.doFilter(req, res);
+        }
+    }
+
+    @Override
+    public void init(FilterConfig filterConfig) {
+    }
+
+    @Override
+    public void destroy() {
+    }
+}

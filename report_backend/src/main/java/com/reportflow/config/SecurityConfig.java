@@ -30,14 +30,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Public endpoints - no authentication required
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow all preflight requests
                 .requestMatchers("/", "/index.html", "/static/**", "/assets/**", "/*.js", "/*.css", "/*.ico", "/*.png", "/*.jpg", "/*.svg").permitAll()
                 .requestMatchers("/login", "/auth/callback", "/dashboard", "/teams", "/developers", "/reports", "/repositories", "/admin", "/settings", "/profile", "/notifications", "/billing").permitAll()
+                // All other requests need authentication
                 .anyRequest().authenticated()
             )
-            // Temporarily remove JWT filter for debugging
+            // Add JWT authentication filter
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();

@@ -1,0 +1,68 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node / NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+.cache/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+report_frontend/dist/
+report_backend/target/
+
+# Temporary files
+*.tmp
+*.temp
+.temp/
+
+# Test files (HTML test pages - not needed in repo)
+*_test.html
+oauth_test_page.html
+complete_oauth_test.html
+final_oauth_test.html
+oauth_solution.html
+direct_oauth_test.html
+
+# Static resources (generated from frontend build)
+report_backend/src/main/resources/static/assets/
+report_backend/src/main/resources/static/index.html
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Sensitive data
+application-local.properties
+application-prod.properties

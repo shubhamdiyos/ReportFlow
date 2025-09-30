@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Debug</title>
+</head>
+<body>
+    <h1>OAuth Debug</h1>
+    <div id="result"></div>
+    
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        
+        const resultDiv = document.getElementById('result');
+        
+        if (code) {
+            resultDiv.innerHTML = `
+                <h2>OAuth Callback Received</h2>
+                <p><strong>Code:</strong> ${code}</p>
+                <p><strong>State:</strong> ${state}</p>
+                <button onclick="testBackend()">Test Backend Call</button>
+                <div id="backend-result"></div>
+            `;
+        } else {
+            resultDiv.innerHTML = `
+                <h2>No OAuth Code</h2>
+                <p>This page should be called with OAuth parameters</p>
+                <button onclick="getOAuthUrl()">Get OAuth URL</button>
+                <div id="oauth-url"></div>
+            `;
+        }
+        
+        async function testBackend() {
+            const backendResult = document.getElementById('backend-result');
+            backendResult.innerHTML = '<p>Testing backend...</p>';
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/github/callback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        state: state
+                    })
+                });
+                
+                const result = await response.text();
+                backendResult.innerHTML = `
+                    <h3>Backend Response</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Response:</strong> ${result}</p>
+                `;
+            } catch (error) {
+                backendResult.innerHTML = `
+                    <h3>Backend Error</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                `;
+            }
+        }
+        
+        async function getOAuthUrl() {
+            const oauthDiv = document.getElementById('oauth-url');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/github/url');
+                const data = await response.json();
+                oauthDiv.innerHTML = `
+                    <h3>OAuth URL</h3>
+                    <p><a href="${data.url}" target="_blank">${data.url}</a></p>
+                `;
+            } catch (error) {
+                oauthDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

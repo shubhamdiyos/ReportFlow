@@ -2,7 +2,7 @@ services:
   # Backend Service
   - type: web
     name: reportflow-backend
-    runtime: java
+    env: java
     buildCommand: cd report_backend && mvn clean package -DskipTests
     startCommand: cd report_backend && java -jar target/reportflow-backend-1.0.0.jar
     envVars:

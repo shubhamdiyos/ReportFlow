@@ -14,17 +14,61 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        // Get the authorization code from URL parameters
+        // Get parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
+        const token = urlParams.get('token');
+        const success = urlParams.get('success');
         const error = urlParams.get('error');
+        const errorMessage = urlParams.get('message');
 
-        if (error) {
-          throw new Error(`GitHub OAuth error: ${error}`);
+        // Check if backend already processed and redirected with token
+        if (success === 'true' && token) {
+          setMessage("Authentication successful! Redirecting...");
+          setStatus("success");
+
+          // Decode the JWT to get user data
+          try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const payload = JSON.parse(jsonPayload);
+
+            localStorage.setItem('auth_token', token);
+            
+            // Fetch user details with the token
+            const userResponse = await fetch(`${API_CONFIG.BASE_URL}/users/me`, {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            
+            if (userResponse.ok) {
+              const userData = await userResponse.json();
+              localStorage.setItem('auth_user', JSON.stringify(userData));
+              loginWithToken({ token, user: userData, success: true });
+            }
+          } catch (e) {
+            console.error('Error decoding token:', e);
+          }
+
+          // Redirect to dashboard
+          setTimeout(() => {
+            setLocation("/dashboard");
+          }, 1000);
+          return;
         }
 
+        // Handle error from backend redirect
+        if (error) {
+          throw new Error(errorMessage || `Authentication error: ${error}`);
+        }
+
+        // Fallback: If we have a code, process it
+        const code = urlParams.get('code');
         if (!code) {
-          throw new Error('No authorization code received from GitHub');
+          throw new Error('No authorization code or token received');
         }
 
         setMessage("Exchanging code for access token...");

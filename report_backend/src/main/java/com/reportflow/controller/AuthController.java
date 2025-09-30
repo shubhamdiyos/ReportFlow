@@ -33,10 +33,24 @@ public class AuthController {
     }
     
     @GetMapping("/github/callback")
-    public ResponseEntity<Map<String, Object>> githubCallbackGet(@RequestParam("code") String code, 
-                                                                   @RequestParam(value = "state", required = false) String state) {
+    public void githubCallbackGet(@RequestParam("code") String code, 
+                                   @RequestParam(value = "state", required = false) String state,
+                                   jakarta.servlet.http.HttpServletResponse httpResponse) throws java.io.IOException {
         Map<String, Object> response = gitHubOAuthService.handleCallback(code);
-        return ResponseEntity.ok(response);
+        
+        // Redirect to frontend with token
+        String frontendUrl = "http://localhost:5173/auth/callback";
+        
+        if (response.get("success") == Boolean.TRUE) {
+            String token = (String) response.get("token");
+            // Redirect to frontend with token
+            httpResponse.sendRedirect(frontendUrl + "?token=" + token + "&success=true");
+        } else {
+            // Redirect to frontend with error
+            String error = (String) response.get("error");
+            String message = (String) response.get("message");
+            httpResponse.sendRedirect(frontendUrl + "?error=" + error + "&message=" + java.net.URLEncoder.encode(message, "UTF-8"));
+        }
     }
     
     @PostMapping("/github/callback")

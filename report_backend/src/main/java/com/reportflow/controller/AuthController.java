@@ -32,6 +32,13 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("url", authUrl));
     }
     
+    @GetMapping("/github/callback")
+    public ResponseEntity<Map<String, Object>> githubCallbackGet(@RequestParam("code") String code, 
+                                                                   @RequestParam(value = "state", required = false) String state) {
+        Map<String, Object> response = gitHubOAuthService.handleCallback(code);
+        return ResponseEntity.ok(response);
+    }
+    
     @PostMapping("/github/callback")
     public ResponseEntity<Map<String, Object>> githubCallback(@Valid @RequestBody GitHubCallbackRequest request) {
         Map<String, Object> response = gitHubOAuthService.handleCallback(request.getCode());

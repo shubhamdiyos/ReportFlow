@@ -1,12 +1,12 @@
-# Use Maven image to build the application
+# Multi-stage build for Spring Boot application
 FROM maven:3.9-eclipse-temurin-17 AS build
 
 # Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies from report_backend
-COPY report_backend/pom.xml .
-RUN mvn dependency:go-offline
+# Copy pom.xml and download dependencies
+COPY report_backend/pom.xml ./pom.xml
+RUN mvn dependency:go-offline -B
 
 # Copy source code
 COPY report_backend/src ./src

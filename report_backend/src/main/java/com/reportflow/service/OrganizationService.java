@@ -26,6 +26,7 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserOrganizationRepository userOrganizationRepository;
     private final GitHubApiService gitHubApiService;
+    private final UserService userService;
     
     public Optional<Organization> findById(String id) {
         return organizationRepository.findById(id);

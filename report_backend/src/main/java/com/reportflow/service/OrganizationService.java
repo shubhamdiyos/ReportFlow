@@ -50,11 +50,16 @@ public class OrganizationService {
     }
     
     public boolean userBelongsToOrgByUsername(String username, String orgId) {
+        log.info("Checking if user '{}' belongs to org '{}'", username, orgId);
         Optional<User> user = userService.findByUsername(username);
         if (user.isEmpty()) {
+            log.warn("User not found by username: {}", username);
             return false;
         }
-        return userBelongsToOrg(user.get().getId(), orgId);
+        log.info("Found user: {} (ID: {})", user.get().getUsername(), user.get().getId());
+        boolean belongs = userBelongsToOrg(user.get().getId(), orgId);
+        log.info("User belongs to org: {}", belongs);
+        return belongs;
     }
     
     public boolean userHasRoleInOrg(String userId, String orgId, UserRole requiredRole) {

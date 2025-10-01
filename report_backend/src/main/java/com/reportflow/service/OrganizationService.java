@@ -8,6 +8,7 @@ import com.reportflow.entity.UserOrganizationId;
 import com.reportflow.entity.UserRole;
 import com.reportflow.repository.OrganizationRepository;
 import com.reportflow.repository.UserOrganizationRepository;
+import com.reportflow.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class OrganizationService {
     private final OrganizationRepository organizationRepository;
     private final UserOrganizationRepository userOrganizationRepository;
     private final GitHubApiService gitHubApiService;
-    private final UserService userService;
+    private final UserRepository userRepository;
     
     public Optional<Organization> findById(String id) {
         return organizationRepository.findById(id);
@@ -51,7 +52,7 @@ public class OrganizationService {
     
     public boolean userBelongsToOrgByUsername(String username, String orgId) {
         log.info("Checking if user '{}' belongs to org '{}'", username, orgId);
-        Optional<User> user = userService.findByUsername(username);
+        Optional<User> user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             log.warn("User not found by username: {}", username);
             return false;

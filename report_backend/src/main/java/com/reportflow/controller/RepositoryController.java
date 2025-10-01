@@ -5,10 +5,13 @@ import com.reportflow.dto.SyncResponse;
 import com.reportflow.entity.Repository;
 import com.reportflow.entity.SyncStatus;
 import com.reportflow.entity.User;
+import com.reportflow.service.OrganizationService;
 import com.reportflow.service.RepositoryService;
 import com.reportflow.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -23,17 +26,35 @@ import java.util.Optional;
 @RequestMapping("/api/repositories")
 @CrossOrigin(origins = {"http://localhost:5000", "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:5173", "http://127.0.0.1:63339"})
 @RequiredArgsConstructor
+@Slf4j
 public class RepositoryController {
     
     private final RepositoryService repositoryService;
     private final UserService userService;
+    private final OrganizationService organizationService;
     
     @GetMapping
-    @PreAuthorize("@organizationService.userBelongsToOrgByUsername(authentication.name, #organizationId)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Repository>> getRepositories(
             @RequestParam String organizationId,
             @RequestParam(required = false) String status,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            Authentication authentication) {
+        
+        // Log authentication details for debugging
+        log.info("=== Repository Request Debug ===");
+        log.info("User: {}", authentication.getName());
+        log.info("Organization ID: {}", organizationId);
+        log.info("Authorities: {}", authentication.getAuthorities());
+        
+        // Check if user belongs to organization
+        boolean hasAccess = organizationService.userBelongsToOrgByUsername(authentication.getName(), organizationId);
+        log.info("User has access: {}", hasAccess);
+        
+        if (!hasAccess) {
+            log.warn("Access denied for user {} to organization {}", authentication.getName(), organizationId);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         
         SyncStatus syncStatus = null;
         if (status != null) {

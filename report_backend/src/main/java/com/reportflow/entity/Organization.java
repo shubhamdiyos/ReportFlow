@@ -32,6 +32,11 @@ public class Organization {
     
     private String logo;
     
+    @Column(name = "github_id", unique = true)
+    private String githubId;
+    
+    private String description;
+    
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)

@@ -38,6 +38,27 @@ public class Repository {
     @Column(nullable = false)
     private Integer commits = 0;
     
+    @Column(name = "stars_count")
+    private Integer starsCount = 0;
+    
+    @Column(name = "forks_count")
+    private Integer forksCount = 0;
+    
+    @Column(name = "open_issues_count")
+    private Integer openIssuesCount = 0;
+    
+    @Column(name = "size_kb")
+    private Long sizeKb = 0L;
+    
+    @Column(name = "default_branch")
+    private String defaultBranch = "main";
+    
+    @Column(name = "is_fork")
+    private Boolean isFork = false;
+    
+    @Column(name = "is_archived")
+    private Boolean isArchived = false;
+    
     @Column(name = "last_sync")
     private LocalDateTime lastSync;
     

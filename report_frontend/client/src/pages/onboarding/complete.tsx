@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { CheckCircle, Loader2, Rocket, BarChart3, Github, Users } from "lucide-react";
+import { apiService } from "@/lib/api";
 
 export default function OnboardingComplete() {
   const { user, updateUser } = useAuth();
@@ -16,20 +17,27 @@ export default function OnboardingComplete() {
     setIsCompleting(true);
     
     try {
-      // Simulate onboarding completion process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Complete onboarding via API
+      const response = await apiService.completeOnboarding({
+        notificationPreferences: {
+          email: true,
+          inApp: true
+        },
+        dashboardLayout: "default"
+      });
       
-      // Mark user as onboarded
+      // Update user state with onboarded status
       updateUser({ isOnboarded: true });
       
       toast({
         title: "Setup complete!",
-        description: "Welcome to ReportFlow. Your workspace is ready.",
+        description: response.message || "Welcome to ReportFlow. Your workspace is ready.",
       });
       
       // Navigate to dashboard
-      setLocation("/dashboard");
+      setLocation(response.redirectTo || "/dashboard");
     } catch (error) {
+      console.error("Failed to complete onboarding:", error);
       toast({
         title: "Setup failed",
         description: "There was an error completing your setup. Please try again.",

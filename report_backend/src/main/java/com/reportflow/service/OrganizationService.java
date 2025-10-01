@@ -1,6 +1,7 @@
 package com.reportflow.service;
 
 import com.reportflow.entity.Organization;
+import com.reportflow.entity.OrganizationType;
 import com.reportflow.entity.User;
 import com.reportflow.entity.UserOrganization;
 import com.reportflow.entity.UserOrganizationId;
@@ -8,19 +9,23 @@ import com.reportflow.entity.UserRole;
 import com.reportflow.repository.OrganizationRepository;
 import com.reportflow.repository.UserOrganizationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class OrganizationService {
     
     private final OrganizationRepository organizationRepository;
     private final UserOrganizationRepository userOrganizationRepository;
+    private final GitHubApiService gitHubApiService;
     
     public Optional<Organization> findById(String id) {
         return organizationRepository.findById(id);
@@ -94,5 +99,119 @@ public class OrganizationService {
     
     public Long getActiveUserCount(String organizationId) {
         return userOrganizationRepository.countActiveUsersByOrganizationId(organizationId);
+    }
+    
+    public Optional<Organization> findByGithubId(String githubId) {
+        return organizationRepository.findByGithubId(githubId);
+    }
+    
+    /**
+     * Sync user's organizations from GitHub
+     */
+    public List<Organization> syncUserOrganizationsFromGitHub(User user) {
+        if (user.getGithubAccessToken() == null || user.getGithubAccessToken().isEmpty()) {
+            log.warn("User {} has no GitHub access token for organization sync", user.getUsername());
+            return List.of();
+        }
+        
+        try {
+            List<Map<String, Object>> githubOrgs = gitHubApiService.fetchUserOrganizations(user.getGithubAccessToken());
+            List<Organization> syncedOrgs = new java.util.ArrayList<>();
+            
+            for (Map<String, Object> githubOrg : githubOrgs) {
+                Organization org = createOrUpdateOrganizationFromGitHub(githubOrg);
+                if (org != null) {
+                    // Add user to organization with DEVELOPER role by default
+                    addUserToOrganization(user, org, UserRole.DEVELOPER);
+                    syncedOrgs.add(org);
+                }
+            }
+            
+            log.info("Synced {} organizations for user {}", syncedOrgs.size(), user.getUsername());
+            return syncedOrgs;
+            
+        } catch (Exception e) {
+            log.error("Error syncing organizations for user {}: {}", user.getUsername(), e.getMessage());
+            return List.of();
+        }
+    }
+    
+    /**
+     * Create or update organization from GitHub data
+     */
+    private Organization createOrUpdateOrganizationFromGitHub(Map<String, Object> githubOrg) {
+        try {
+            String githubId = String.valueOf(githubOrg.get("id"));
+            String name = (String) githubOrg.get("login");
+            String displayName = (String) githubOrg.get("name");
+            String description = (String) githubOrg.get("description");
+            String avatarUrl = (String) githubOrg.get("avatar_url");
+            String htmlUrl = (String) githubOrg.get("html_url");
+            
+            // Check if organization already exists
+            Optional<Organization> existingOrg = findByGithubId(githubId);
+            
+            Organization org;
+            if (existingOrg.isPresent()) {
+                // Update existing organization
+                org = existingOrg.get();
+                org.setName(displayName != null ? displayName : name);
+                org.setDescription(description);
+                org.setLogo(avatarUrl);
+                if (htmlUrl != null) {
+                    // Extract domain from GitHub URL
+                    String domain = htmlUrl.replace("https://github.com/", "");
+                    org.setDomain(domain);
+                }
+            } else {
+                // Create new organization
+                org = new Organization();
+                org.setName(displayName != null ? displayName : name);
+                org.setDescription(description);
+                org.setLogo(avatarUrl);
+                org.setGithubId(githubId);
+                org.setType(OrganizationType.ORGANIZATION);
+                
+                if (htmlUrl != null) {
+                    // Extract domain from GitHub URL
+                    String domain = htmlUrl.replace("https://github.com/", "");
+                    org.setDomain(domain);
+                }
+            }
+            
+            return save(org);
+            
+        } catch (Exception e) {
+            log.error("Error creating/updating organization from GitHub data: {}", e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * Create user's personal organization (for personal repositories)
+     */
+    public Organization createPersonalOrganization(User user) {
+        // Check if personal organization already exists
+        String personalOrgName = user.getUsername() + " (Personal)";
+        Optional<Organization> existingPersonalOrg = organizationRepository.findByName(personalOrgName);
+        
+        if (existingPersonalOrg.isPresent()) {
+            return existingPersonalOrg.get();
+        }
+        
+        Organization personalOrg = new Organization();
+        personalOrg.setName(personalOrgName);
+        personalOrg.setDomain(user.getUsername());
+        personalOrg.setLogo(user.getAvatar());
+        personalOrg.setType(OrganizationType.INDIVIDUAL);
+        personalOrg.setDescription("Personal repositories for " + user.getName());
+        personalOrg.setGithubId(user.getGithubId()); // Use user's GitHub ID for personal org
+        
+        Organization savedOrg = save(personalOrg);
+        
+        // Add user as admin of their personal organization
+        addUserToOrganization(user, savedOrg, UserRole.ADMIN);
+        
+        return savedOrg;
     }
 }

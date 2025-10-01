@@ -177,6 +177,7 @@ public class GitHubOAuthService {
             user.setName(name != null ? name : user.getName());
             user.setEmail(email != null ? email : user.getEmail());
             user.setAvatar(avatar);
+            user.setGithubAccessToken(accessToken);
             return userService.save(user);
         } else {
             // Create new user
@@ -186,6 +187,7 @@ public class GitHubOAuthService {
             newUser.setEmail(email != null ? email : username + "@github.local");
             newUser.setAvatar(avatar);
             newUser.setGithubId(githubId);
+            newUser.setGithubAccessToken(accessToken);
             newUser.setRole(UserRole.DEVELOPER);
             newUser.setIsOnboarded(false);
             

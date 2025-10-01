@@ -1,13 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { ArrowRight, Github, Users, BarChart3, CheckCircle } from "lucide-react";
+import { apiService } from "@/lib/api";
 
 export default function OnboardingWelcome() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [, setLocation] = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Check onboarding status when component mounts
+    const checkOnboardingStatus = async () => {
+      try {
+        const status = await apiService.getOnboardingStatus();
+        if (status.user && status.user.isOnboarded) {
+          setLocation("/dashboard");
+        }
+      } catch (error) {
+        console.error("Failed to check onboarding status:", error);
+      }
+    };
+
+    if (user) {
+      checkOnboardingStatus();
+    }
+  }, [user, setLocation]);
+
+  const handleStartSetup = async () => {
+    setLoading(true);
+    try {
+      // First sync organizations from GitHub
+      await apiService.syncOnboardingOrganizations();
+      setLocation("/onboarding/repositories");
+    } catch (error) {
+      console.error("Failed to sync organizations:", error);
+      // Continue to repositories page even if sync fails
+      setLocation("/onboarding/repositories");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const features = [
     {
@@ -64,12 +99,13 @@ export default function OnboardingWelcome() {
             The setup process will take just a few minutes to get you started.
           </p>
           <Button 
-            onClick={() => setLocation("/onboarding/repositories")}
+            onClick={handleStartSetup}
             size="lg"
             className="px-8"
+            disabled={loading}
             data-testid="button-start-setup"
           >
-            Start Setup
+            {loading ? "Setting up..." : "Start Setup"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>

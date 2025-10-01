@@ -14,6 +14,10 @@ public interface OrganizationRepository extends JpaRepository<Organization, Stri
     
     Optional<Organization> findByDomain(String domain);
     
+    Optional<Organization> findByName(String name);
+    
+    Optional<Organization> findByGithubId(String githubId);
+    
     boolean existsByDomain(String domain);
     
     List<Organization> findByNameContainingIgnoreCase(String name);

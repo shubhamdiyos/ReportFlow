@@ -13,9 +13,13 @@ export const API_CONFIG = {
   // API endpoints
   ENDPOINTS: {
     USERS: '/users',
+    USERS_ME: '/users/me',
     ORGANIZATIONS: '/organizations',
+    ORGANIZATIONS_SYNC: '/organizations/sync',
     REPOSITORIES: '/repositories',
+    REPOSITORIES_SYNC_ALL: '/repositories/sync/all',
     ANALYTICS: '/analytics',
+    ONBOARDING: '/onboarding',
   }
 } as const;
 

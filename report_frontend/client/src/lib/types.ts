@@ -1,3 +1,40 @@
+// User types matching backend
+export interface User {
+  id: string;
+  username: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  githubId: string | null;
+  githubAccessToken?: string;
+  role: "ADMIN" | "MANAGER" | "DEVELOPER";
+  isOnboarded: boolean;
+  createdAt: string;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  domain: string | null;
+  logo: string | null;
+  githubId: string | null;
+  description: string | null;
+  type: "INDIVIDUAL" | "ORGANIZATION";
+  createdAt: string;
+}
+
+export interface UserOrganizationMembership {
+  id: string;
+  name: string;
+  domain: string | null;
+  logo: string | null;
+  type: "INDIVIDUAL" | "ORGANIZATION";
+  role: "ADMIN" | "MANAGER" | "DEVELOPER";
+  joinedAt: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface KPI {
   id: string;
   title: string;
@@ -42,11 +79,25 @@ export interface Repository {
   name: string;
   description: string;
   language: string;
-  visibility: "public" | "private";
+  visibility: "PUBLIC" | "PRIVATE";
   commits: number;
+  starsCount: number;
+  forksCount: number;
+  openIssuesCount: number;
+  sizeKb: number;
+  defaultBranch: string;
+  isFork: boolean;
+  isArchived: boolean;
   lastSync: string;
-  syncStatus: "success" | "failed" | "pending";
+  syncStatus: "SUCCESS" | "FAILED" | "PENDING";
   included: boolean;
+  githubUrl: string;
+  githubId: string;
+  organization: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
 }
 
 export interface Report {

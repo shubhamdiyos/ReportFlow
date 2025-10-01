@@ -1,18 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { AUTH_STORAGE } from "@/lib/config";
-
-interface User {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  avatar: string | null;
-  role: "developer" | "manager" | "admin";
-  githubId: string | null;
-  isOnboarded: boolean;
-  createdAt: Date;
-}
+import { User } from "@/lib/types";
 
 interface AuthResponse {
   token: string;
@@ -44,10 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (saved) {
       try {
         const userData = JSON.parse(saved);
-        // Convert createdAt string back to Date
-        if (userData.createdAt) {
-          userData.createdAt = new Date(userData.createdAt);
-        }
+        // Keep createdAt as string to match backend format
         return userData;
       } catch {
         // If parsing fails, clear invalid data

@@ -4,14 +4,20 @@ import com.reportflow.dto.AddRepositoryRequest;
 import com.reportflow.dto.SyncResponse;
 import com.reportflow.entity.Repository;
 import com.reportflow.entity.SyncStatus;
+import com.reportflow.entity.User;
 import com.reportflow.service.RepositoryService;
+import com.reportflow.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/repositories")
@@ -20,6 +26,7 @@ import java.util.List;
 public class RepositoryController {
     
     private final RepositoryService repositoryService;
+    private final UserService userService;
     
     @GetMapping
     @PreAuthorize("@organizationService.userBelongsToOrg(authentication.name, #organizationId)")
@@ -71,6 +78,33 @@ public class RepositoryController {
             return ResponseEntity.ok(repository);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @PostMapping("/sync/all")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> syncAllRepositoriesFromGitHub(Authentication authentication) {
+        try {
+            Optional<User> currentUser = userService.getCurrentUser(authentication.getName());
+            if (currentUser.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Map<String, Object> syncResult = repositoryService.syncAllUserRepositoriesFromGitHub(currentUser.get());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "All repositories synced successfully");
+            response.putAll(syncResult);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to sync repositories");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
         }
     }
 }

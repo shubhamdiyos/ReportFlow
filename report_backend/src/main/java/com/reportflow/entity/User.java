@@ -42,6 +42,9 @@ public class User {
     @Column(name = "github_id", unique = true)
     private String githubId;
     
+    @Column(name = "github_access_token")
+    private String githubAccessToken;
+    
     @Enumerated(EnumType.STRING)
     @NotNull
     @Column(nullable = false)

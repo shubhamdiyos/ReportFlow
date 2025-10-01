@@ -36,8 +36,46 @@ public class UserService {
     public Optional<User> findByGithubId(String githubId) {
         return userRepository.findByGithubId(githubId);
     }
+    
     public User save(User user) {
         return userRepository.save(user);
+    }
+    
+    public Optional<User> getCurrentUser(String username) {
+        return findByUsername(username);
+    }
+    
+    public User updateUserProfile(String userId, String name, String email, String avatar, Boolean isOnboarded) {
+        Optional<User> userOpt = findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found with id: " + userId);
+        }
+        
+        User user = userOpt.get();
+        
+        // Update fields if provided
+        if (name != null && !name.trim().isEmpty()) {
+            user.setName(name.trim());
+        }
+        
+        if (email != null && !email.trim().isEmpty()) {
+            // Check if email is already taken by another user
+            Optional<User> existingUser = findByEmail(email);
+            if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
+                throw new RuntimeException("Email already exists: " + email);
+            }
+            user.setEmail(email.trim());
+        }
+        
+        if (avatar != null) {
+            user.setAvatar(avatar);
+        }
+        
+        if (isOnboarded != null) {
+            user.setIsOnboarded(isOnboarded);
+        }
+        
+        return save(user);
     }
     
     public User createUser(String username, String name, String email) {

@@ -3,14 +3,18 @@ package com.reportflow.controller;
 import com.reportflow.dto.TenantSwitchResponse;
 import com.reportflow.dto.UserOrganizationMembership;
 import com.reportflow.entity.Organization;
+import com.reportflow.entity.User;
 import com.reportflow.service.OrganizationService;
 import com.reportflow.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -48,5 +52,37 @@ public class OrganizationController {
         Optional<Organization> organization = organizationService.findById(id);
         return organization.map(ResponseEntity::ok)
                          .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @PostMapping("/sync")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> syncOrganizationsFromGitHub(Authentication authentication) {
+        try {
+            Optional<User> currentUser = userService.getCurrentUser(authentication.getName());
+            if (currentUser.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            List<Organization> syncedOrgs = organizationService.syncUserOrganizationsFromGitHub(currentUser.get());
+            
+            // Also create personal organization if it doesn't exist
+            Organization personalOrg = organizationService.createPersonalOrganization(currentUser.get());
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Organizations synced successfully");
+            response.put("syncedOrganizations", syncedOrgs.size());
+            response.put("personalOrganization", personalOrg.getName());
+            response.put("organizations", syncedOrgs);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Failed to sync organizations");
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
     }
 }

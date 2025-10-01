@@ -196,7 +196,10 @@ public class OrganizationService {
         Optional<Organization> existingPersonalOrg = organizationRepository.findByName(personalOrgName);
         
         if (existingPersonalOrg.isPresent()) {
-            return existingPersonalOrg.get();
+            Organization org = existingPersonalOrg.get();
+            // Ensure user is added to the organization (in case relationship is missing)
+            addUserToOrganization(user, org, UserRole.ADMIN);
+            return org;
         }
         
         Organization personalOrg = new Organization();

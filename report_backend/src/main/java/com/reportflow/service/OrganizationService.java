@@ -48,6 +48,14 @@ public class OrganizationService {
         return userOrg.isPresent();
     }
     
+    public boolean userBelongsToOrgByUsername(String username, String orgId) {
+        Optional<User> user = userService.findByUsername(username);
+        if (user.isEmpty()) {
+            return false;
+        }
+        return userBelongsToOrg(user.get().getId(), orgId);
+    }
+    
     public boolean userHasRoleInOrg(String userId, String orgId, UserRole requiredRole) {
         Optional<UserOrganization> userOrg = userOrganizationRepository.findActiveUserOrganization(userId, orgId);
         if (userOrg.isEmpty()) {

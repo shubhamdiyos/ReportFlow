@@ -29,7 +29,7 @@ public class RepositoryController {
     private final UserService userService;
     
     @GetMapping
-    @PreAuthorize("@organizationService.userBelongsToOrg(authentication.name, #organizationId)")
+    @PreAuthorize("@organizationService.userBelongsToOrgByUsername(authentication.name, #organizationId)")
     public ResponseEntity<List<Repository>> getRepositories(
             @RequestParam String organizationId,
             @RequestParam(required = false) String status,

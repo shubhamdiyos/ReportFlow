@@ -207,10 +207,10 @@ export default function Signup() {
         username: step1.username,
         email: step1.email,
         avatar: null,
-        role: "DEVELOPER" as const,
+        role: "developer" as const,
         githubId: null,
         isOnboarded: false, // New users need onboarding
-        createdAt: new Date().toISOString()
+        createdAt: new Date()
       };
 
       toast({

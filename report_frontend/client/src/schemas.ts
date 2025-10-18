@@ -61,9 +61,9 @@ export type User = {
   email: string;
   avatar?: string | null;
   githubId?: string | null;
-  role: "admin" | "manager" | "developer";
+  role: "ADMIN" | "MANAGER" | "DEVELOPER";
   isOnboarded: boolean;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type Organization = {
@@ -72,5 +72,5 @@ export type Organization = {
   domain?: string | null;
   logo?: string | null;
   type: "individual" | "organization";
-  createdAt: Date;
+  createdAt: string;
 };

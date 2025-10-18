@@ -80,7 +80,7 @@ import {
   mockInvoices 
 } from "@/lib/mock-data";
 import { SubscriptionPlan, PaymentMethod, Invoice, CurrentSubscription } from "@/lib/types";
-import { paymentMethodSchema, PaymentMethodForm } from "@shared/schema";
+import { paymentMethodSchema, PaymentMethodForm } from "../schemas";
 import { cn } from "@/lib/utils";
 
 interface PlanChangeData {

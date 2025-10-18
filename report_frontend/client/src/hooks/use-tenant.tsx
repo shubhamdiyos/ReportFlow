@@ -3,7 +3,7 @@ import { useAuth } from "./use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import type { Organization } from "../schemas";
+import type { Organization, UserOrganization } from "@shared/schema";
 
 // Extended interface for organization membership with role information
 export interface UserOrganizationMembership extends Organization {

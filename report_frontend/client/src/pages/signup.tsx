@@ -51,7 +51,7 @@ import {
   UserPlus
 } from "lucide-react";
 import { Link } from "wouter";
-import { signupStep1Schema, signupStep2Schema, SignupStep1, SignupStep2 } from "../schemas";
+import { signupStep1Schema, signupStep2Schema, SignupStep1, SignupStep2 } from "@shared/schema";
 import { cn } from "@/lib/utils";
 
 type SignupStep = 1 | 2;

@@ -99,13 +99,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <Slot
           className={cn(buttonVariants({ variant, size, className }))}
           ref={ref}
-          disabled={isDisabled}
           {...props}
         >
           {children}
         </Slot>
       )
     }
+
+    // Separate motion-specific and HTML button props
+    const { onDrag, onDragStart, onDragEnd, ...buttonProps } = props as any;
 
     return (
       <motion.button
@@ -117,7 +119,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         whileTap={!isDisabled ? "tap" : "idle"}
         animate={loading ? "loading" : "idle"}
         disabled={isDisabled}
-        {...props}
+        {...buttonProps}
       >
         {/* Loading shimmer effect overlay */}
         {loading && (

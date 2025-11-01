@@ -333,7 +333,7 @@ export function useWelcomeMessages() {
 
   // Get personalized message based on current context
   const getPersonalizedMessage = (): WelcomeMessageVariant => {
-    const userRole = user?.role || "developer";
+    const userRole = (user?.role?.toLowerCase() as keyof RoleContextMessages) || "developer";
     const context = getCurrentContext();
     const messages = roleMessages[userRole]?.[context] || roleMessages[userRole]?.default || [];
     
@@ -353,7 +353,7 @@ export function useWelcomeMessages() {
   // Generate contextual tips based on current page and user behavior
   const getContextualTips = (): string[] => {
     const context = getCurrentContext();
-    const userRole = user?.role || "developer";
+    const userRole = user?.role?.toLowerCase() || "developer";
     
     const tipsByContext: Record<string, Record<string, string[]>> = {
       dashboard: {
@@ -400,7 +400,7 @@ export function useWelcomeMessages() {
 
   // Get achievement-based messages
   const getAchievementMessage = (): string | null => {
-    const userRole = user?.role || "developer";
+    const userRole = user?.role?.toLowerCase() || "developer";
     
     // Simulate achievements based on user role and mock data
     const achievements: Record<string, string[]> = {

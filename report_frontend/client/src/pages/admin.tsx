@@ -92,7 +92,7 @@ export default function Admin() {
 
   // Check if current user can perform admin actions
   const canManageUsers = permissions.canManageUsers;
-  const canPromoteToAdmin = user?.role === "admin";
+  const canPromoteToAdmin = user?.role === "ADMIN";
 
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

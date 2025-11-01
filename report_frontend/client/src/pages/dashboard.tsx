@@ -384,7 +384,7 @@ export default function Dashboard() {
             onAddAnnotation={(annotation: any) => setAnnotations(prev => [...prev, annotation])}
             // Styling
             height={320}
-            selectedColors={["#3b82f6", "#10b981", "#f59e0b"]}
+            customColors={["#3b82f6", "#10b981", "#f59e0b"]}
             showLegend={true}
             // Export capabilities
             exportFileName="contributions-over-time"
@@ -424,7 +424,7 @@ export default function Dashboard() {
             enableDrillDown={true}
             // Styling
             height={320}
-            selectedColors={["#8b5cf6", "#06b6d4", "#84cc16"]}
+            customColors={["#8b5cf6", "#06b6d4", "#84cc16"]}
             showLegend={comparisonMode}
             // Export capabilities
             exportFileName="top-contributors"

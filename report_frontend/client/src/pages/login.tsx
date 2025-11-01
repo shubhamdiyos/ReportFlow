@@ -39,10 +39,10 @@ export default function Login() {
       username: "johndoe", 
       email: "john.doe@example.com",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=48&h=48",
-      role: "manager" as const,
+      role: "MANAGER" as const,
       githubId: null,
       isOnboarded: true,
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     };
     login(demoUser);
   };
@@ -63,10 +63,10 @@ export default function Login() {
         username: "formuser",
         email: formData.email,
         avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=48&h=48",
-        role: "developer" as const,
+        role: "DEVELOPER" as const,
         githubId: null,
         isOnboarded: true,
-        createdAt: new Date()
+        createdAt: new Date().toISOString()
       };
 
       toast({

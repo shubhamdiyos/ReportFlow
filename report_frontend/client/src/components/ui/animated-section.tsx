@@ -23,45 +23,63 @@ export function AnimatedSection({
   childDelay = 0.2,
   direction = "normal",
   className,
+  style,
   ...props 
 }: AnimatedSectionProps) {
   const { reducedMotion } = useMotionPreferences();
-  
-  if (reducedMotion) {
-    return (
-      <div className={className} {...props}>
-        {children}
-      </div>
-    );
-  }
 
   if (stagger) {
     const staggerConfig = createAdvancedStagger(staggerDelay, childDelay, direction);
+    const motionConfig = reducedMotion
+      ? {
+          initial: false as const,
+          animate: { opacity: 1 },
+          exit: undefined,
+          transition: { duration: 0 },
+          variants: undefined
+        }
+      : {
+          variants: staggerConfig.container,
+          initial: "initial" as const,
+          animate: "animate" as const,
+          exit: "exit" as const
+        };
+    const containerStyle = reducedMotion ? style : { ...style, willChange: "transform" };
     
     return (
       <motion.div
-        variants={staggerConfig.container}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className={cn("", className)}
-        style={{ willChange: 'transform' }}
         {...props}
+        {...motionConfig}
+        className={cn("", className)}
+        style={containerStyle}
       >
         {children}
       </motion.div>
     );
   }
 
+  const motionConfig = reducedMotion
+    ? {
+        initial: false as const,
+        animate: { opacity: 1 },
+        exit: undefined,
+        transition: { duration: 0 },
+        variants: undefined
+      }
+    : {
+        variants: motionVariants.staggerItem,
+        initial: "initial" as const,
+        animate: "animate" as const,
+        exit: "exit" as const
+      };
+  const itemStyle = reducedMotion ? style : { ...style, willChange: "transform, opacity" };
+
   return (
     <motion.div
-      variants={motionVariants.staggerItem}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      className={cn("", className)}
-      style={{ willChange: 'transform, opacity' }}
       {...props}
+      {...motionConfig}
+      className={cn("", className)}
+      style={itemStyle}
     >
       {children}
     </motion.div>
@@ -75,24 +93,32 @@ export function AnimatedSection({
 export function AnimatedItem({ 
   children, 
   className,
+  style,
   ...props 
 }: HTMLMotionProps<"div"> & { children: React.ReactNode; className?: string }) {
   const { reducedMotion } = useMotionPreferences();
-  
-  if (reducedMotion) {
-    return (
-      <div className={className} {...props}>
-        {children}
-      </div>
-    );
-  }
+  const motionConfig = reducedMotion
+    ? {
+        initial: false as const,
+        animate: { opacity: 1 },
+        exit: undefined,
+        transition: { duration: 0 },
+        variants: undefined
+      }
+    : {
+        variants: motionVariants.staggerItem,
+        initial: "initial" as const,
+        animate: "animate" as const,
+        exit: "exit" as const
+      };
+  const itemStyle = reducedMotion ? style : { ...style, willChange: "transform, opacity" };
 
   return (
     <motion.div
-      variants={motionVariants.staggerItem}
-      className={cn("", className)}
-      style={{ willChange: 'transform, opacity' }}
       {...props}
+      {...motionConfig}
+      className={cn("", className)}
+      style={itemStyle}
     >
       {children}
     </motion.div>

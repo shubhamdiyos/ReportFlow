@@ -76,9 +76,9 @@ export default function Repositories() {
     const matchesStatus = statusFilter === "all" || 
                          (statusFilter === "active" && repo.included) ||
                          (statusFilter === "inactive" && !repo.included) ||
-                         (statusFilter === "synced" && repo.syncStatus === "success") ||
-                         (statusFilter === "failed" && repo.syncStatus === "failed") ||
-                         (statusFilter === "pending" && repo.syncStatus === "pending");
+                         (statusFilter === "synced" && repo.syncStatus === "SUCCESS") ||
+                         (statusFilter === "failed" && repo.syncStatus === "FAILED") ||
+                         (statusFilter === "pending" && repo.syncStatus === "PENDING");
     return matchesSearch && matchesStatus;
   });
 
@@ -100,7 +100,7 @@ export default function Repositories() {
       setRepositories(prev => prev.map(repo => 
         repo.id === repoId ? { 
           ...repo, 
-          syncStatus: "success", 
+          syncStatus: "SUCCESS", 
           lastSync: "Just now" 
         } : repo
       ));
@@ -144,10 +144,21 @@ export default function Repositories() {
         name: repoName,
         description: "Added repository",
         language: "TypeScript",
-        visibility: "private" as const,
+        visibility: "PRIVATE" as const,
         commits: 0,
+        starsCount: 0,
+        forksCount: 0,
+        openIssuesCount: 0,
+        sizeKb: 0,
+        defaultBranch: "main",
+        isFork: false,
+        isArchived: false,
         lastSync: "Never",
-        syncStatus: "pending" as const,
+        syncStatus: "PENDING" as const,
+        githubUrl: `https://github.com/example/${repoName}`,
+        githubId: `gh-new-${repositories.length + 1}`,
+        organization: { id: "org-1", name: "Example Org" },
+        createdAt: new Date().toISOString(),
         included: true
       };
       
@@ -172,21 +183,21 @@ export default function Repositories() {
 
   const getSyncStatusBadge = (status: Repository['syncStatus']) => {
     switch (status) {
-      case "success":
+      case "SUCCESS":
         return (
           <Badge variant="outline" className="text-green-700 border-green-300 bg-green-50 dark:text-green-400 dark:border-green-600 dark:bg-green-950">
             <CheckCircle className="w-3 h-3 mr-1" />
             Active
           </Badge>
         );
-      case "failed":
+      case "FAILED":
         return (
           <Badge variant="outline" className="text-red-700 border-red-300 bg-red-50 dark:text-red-400 dark:border-red-600 dark:bg-red-950">
             <AlertTriangle className="w-3 h-3 mr-1" />
             Sync Failed
           </Badge>
         );
-      case "pending":
+      case "PENDING":
         return (
           <Badge variant="outline" className="text-yellow-700 border-yellow-300 bg-yellow-50 dark:text-yellow-400 dark:border-yellow-600 dark:bg-yellow-950">
             <Clock className="w-3 h-3 mr-1" />
@@ -209,7 +220,7 @@ export default function Repositories() {
       await new Promise(resolve => setTimeout(resolve, 3000));
       setRepositories(prev => prev.map(repo => ({
         ...repo,
-        syncStatus: "success",
+        syncStatus: "SUCCESS",
         lastSync: "Just now"
       })));
       toast({

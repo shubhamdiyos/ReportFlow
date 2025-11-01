@@ -1,0 +1,69 @@
+name: PR Check - Preview Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+jobs:
+  pr-preview:
+    name: Build and Preview Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: report_frontend/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd report_frontend
+          npm ci
+      
+      - name: TypeScript type check
+        run: |
+          cd report_frontend
+          npm run check
+      
+      - name: Build project
+        run: |
+          cd report_frontend
+          npm run build
+        env:
+          NODE_ENV: production
+      
+      - name: Preview Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './report_frontend/dist/public'
+          production-branch: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Preview: PR #${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}"
+          alias: pr-${{ github.event.pull_request.number }}
+          enable-pull-request-comment: true
+          enable-commit-comment: false
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
+        if: github.event_name == 'pull_request'
+      
+      - name: Comment PR with preview URL
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Preview deployment is ready! Check your changes before merging.'
+            })

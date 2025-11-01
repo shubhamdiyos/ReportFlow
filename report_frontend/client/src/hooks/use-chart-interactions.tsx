@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { select, Selection } from "d3-selection";
-import { zoom, zoomTransform, ZoomBehavior } from "d3-zoom";
+import { zoom, zoomTransform, zoomIdentity, ZoomBehavior } from "d3-zoom";
 import { brush, brushSelection, BrushBehavior } from "d3-brush";
 import { ChartData } from "@/lib/types";
 import { useMotionPreferences } from "@/hooks/use-motion-preferences";
@@ -139,7 +139,7 @@ export function useChartInteractions(
 
       chartArea.append("g")
         .attr("class", "brush")
-        .call(brushBehavior);
+        .call(brushBehavior as any);
 
       brushBehaviorRef.current = brushBehavior;
     } catch (error) {
@@ -222,9 +222,9 @@ export function useChartInteractions(
       const svg = select(svgRef.current);
       const duration = reducedMotion ? 0 : 500;
       
-      svg.transition()
+      (svg as any).transition()
         .duration(duration)
-        .call(zoomBehaviorRef.current.transform as any, zoomTransform.scale(1).translate(0, 0));
+        .call(zoomBehaviorRef.current.transform, zoomIdentity);
         
       setState(prev => ({ ...prev, zoomTransform: { x: 0, y: 0, k: 1 } }));
     } catch (error) {
@@ -238,7 +238,7 @@ export function useChartInteractions(
     if (!chartAreaRef.current || !brushBehaviorRef.current) return;
     
     const chartArea = select(chartAreaRef.current);
-    chartArea.select(".brush").call(brushBehaviorRef.current.clear);
+    chartArea.select(".brush").call(brushBehaviorRef.current.clear as any);
     setState(prev => ({ ...prev, brushSelection: null }));
   }, []);
 

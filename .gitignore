@@ -23,7 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 **/dist/
 .cache/
-package-lock.json
+# package-lock.json - commented out to enable reproducible builds in CI/CD
 
 # Environment variables
 .env
@@ -66,3 +66,6 @@ report_backend/src/main/resources/static/index.html
 
 # Sensitive data
 application-local.properties
+
+# Local Netlify folder
+.netlify

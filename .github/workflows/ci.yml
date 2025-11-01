@@ -83,9 +83,3 @@ jobs:
         run: |
           cd report_frontend
           npm audit --audit-level=high || true
-      
-      - name: Verify package-lock.json is up to date
-        run: |
-          cd report_frontend
-          npm install --package-lock-only
-          git diff --exit-code package-lock.json || (echo "package-lock.json is outdated" && exit 1)

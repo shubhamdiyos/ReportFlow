@@ -43,7 +43,8 @@ jobs:
     - name: Deploy on EC2
       run: |
         ssh -i deploy_key.pem -o StrictHostKeyChecking=no \
-          ec2-user@65.1.106.112 'cd ~/app && \
+          ec2-user@65.1.106.112 'mkdir -p ~/app && \
+          cd ~/app && \
           pkill -f reportflow-backend || true && \
           sleep 3 && \
           export DATABASE_URL="jdbc:postgresql://localhost:5433/reportflow" && \

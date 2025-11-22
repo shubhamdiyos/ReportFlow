@@ -69,3 +69,27 @@ application-local.properties
 
 # Local Netlify folder
 .netlify
+
+# Replit IDE files
+**/.replit/
+**/.local/
+**/filesystem_state.json
+**/rapid_build_started
+**/rapid_build_success
+**/repl_state.json
+
+# Screenshots and temporary images
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/after_*.png
+
+# Test HTML files
+*_test.html
+test_cors.html
+oauth_test_page.html
+complete_oauth_test.html
+final_oauth_test.html
+oauth_solution.html
+direct_oauth_test.html

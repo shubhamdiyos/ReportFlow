@@ -36,6 +36,8 @@ jobs:
         
     - name: Copy files to server
       run: |
+        ssh -i deploy_key.pem -o StrictHostKeyChecking=no \
+          ec2-user@65.1.106.112 'mkdir -p ~/app'
         scp -i deploy_key.pem -o StrictHostKeyChecking=no \
           report_backend/target/reportflow-backend-1.0.0.jar \
           ec2-user@65.1.106.112:~/app/

@@ -75,8 +75,8 @@ jobs:
         format: 'sarif'
         output: 'trivy-results.sarif'
         
-    - name: 📤 Upload Trivy Scan Results
-      uses: github/codeql-action/upload-sarif@v2
+    - name: 📤 Upload SARIF File
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'

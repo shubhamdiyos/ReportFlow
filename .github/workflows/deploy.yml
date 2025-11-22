@@ -60,13 +60,18 @@ jobs:
           export FRONTEND_URL="${{ secrets.FRONTEND_URL }}" && \
           export SPRING_PROFILES_ACTIVE=aws && \
           echo "🚀 Starting ReportFlow..." && \
-          java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
-          sleep 15 && \
+          timeout 20 java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
+          sleep 18 && \
           if pgrep -f reportflow-backend > /dev/null; then \
             echo "✅ Deployment successful!"; \
             echo "🌐 http://65.1.106.112:8080"; \
           else \
             echo "❌ Deployment failed!"; \
-            tail -20 app.log; \
+            echo "=== Last 20 lines of app.log ==="; \
+            tail -20 app.log || echo "No app.log found"; \
+            echo "=== Process list ==="; \
+            ps aux | grep java || echo "No Java processes"; \
+            echo "=== Port 8080 status ==="; \
+            sudo ss -tlnp | grep 8080 || echo "Port 8080 not listening"; \
             exit 1; \
           fi'

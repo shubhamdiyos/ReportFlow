@@ -26,7 +26,7 @@ jobs:
     - name: 📤 Upload JAR to EC2
       uses: appleboy/scp-action@v0.1.7
       with:
-        host: ${{ secrets.EC2_HOST }}
+        host: 65.1.106.112
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         source: "report_backend/target/reportflow-backend-1.0.0.jar"
@@ -35,7 +35,7 @@ jobs:
     - name: 🚀 Deploy on EC2
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.EC2_HOST }}
+        host: 65.1.106.112
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
@@ -62,7 +62,7 @@ jobs:
           
           if pgrep -f reportflow-backend > /dev/null; then
             echo "✅ Deployment successful!"
-            echo "🌐 http://${{ secrets.EC2_HOST }}:8080"
+            echo "🌐 http://65.1.106.112:8080"
           else
             echo "❌ Deployment failed!"
             tail -20 app.log

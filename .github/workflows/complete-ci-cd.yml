@@ -43,19 +43,20 @@ jobs:
       working-directory: ./report_backend
       run: mvn validate
       
-    - name: 🧪 Run Unit Tests
+    - name: Run Unit Tests
       working-directory: ./report_backend
       run: mvn clean test
       
-    - name: 📊 Generate Test Report
+    - name: Publish Test Results
+      if: always()
       uses: dorny/test-reporter@v1
-      if: success() || failure()
       with:
-        name: Maven Tests
+        name: Maven Test Results
         path: report_backend/target/surefire-reports/*.xml
         reporter: java-junit
+        fail-on-error: false
         
-    - name: 🏗️ Build Application
+    - name: Build Application
       working-directory: ./report_backend
       run: mvn clean package -DskipTests
       

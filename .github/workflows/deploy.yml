@@ -27,6 +27,12 @@ jobs:
       run: |
         echo "${{ secrets.DEPLOY_KEY }}" > deploy_key.pem
         chmod 600 deploy_key.pem
+        # Verify key exists and is not empty
+        if [ ! -s deploy_key.pem ]; then
+          echo "❌ DEPLOY_KEY secret is empty or not set"
+          exit 1
+        fi
+        echo "✅ SSH key loaded successfully"
         
     - name: Copy files to server
       run: |

@@ -49,6 +49,8 @@ jobs:
           cd ~/app && \
           pkill -f reportflow-backend || true && \
           sleep 3 && \
+          sudo fuser -k 8080/tcp 2>/dev/null || true && \
+          sleep 2 && \
           export DATABASE_URL="jdbc:postgresql://localhost:5433/reportflow" && \
           export DB_USERNAME="reportflow_user" && \
           export DB_PASSWORD="reportflow_password" && \
@@ -58,8 +60,8 @@ jobs:
           export FRONTEND_URL="${{ secrets.FRONTEND_URL }}" && \
           export SPRING_PROFILES_ACTIVE=aws && \
           echo "🚀 Starting ReportFlow..." && \
-          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
-          sleep 10 && \
+          java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
+          sleep 15 && \
           if pgrep -f reportflow-backend > /dev/null; then \
             echo "✅ Deployment successful!"; \
             echo "🌐 http://65.1.106.112:8080"; \

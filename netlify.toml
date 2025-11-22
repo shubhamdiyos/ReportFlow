@@ -1,6 +1,0 @@
-[build]
-  command = "cd report_frontend && npm run build"
-  publish = "report_frontend/dist/public"
-
-[build.environment]
-  NODE_VERSION = "20"

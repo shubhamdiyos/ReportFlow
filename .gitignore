@@ -47,18 +47,6 @@ report_backend/target/
 *.temp
 .temp/
 
-# Test files (HTML test pages - not needed in repo)
-*_test.html
-oauth_test_page.html
-complete_oauth_test.html
-final_oauth_test.html
-oauth_solution.html
-direct_oauth_test.html
-
-# Static resources (generated from frontend build)
-report_backend/src/main/resources/static/assets/
-report_backend/src/main/resources/static/index.html
-
 # Database
 *.db
 *.sqlite
@@ -78,20 +66,8 @@ application-local.properties
 **/rapid_build_success
 **/repl_state.json
 
-# Screenshots and temporary images
-**/*.png
-**/*.jpg
-**/*.jpeg
-**/*.gif
-**/after_*.png
-
-# Test HTML files
-*_test.html
-test_cors.html
-oauth_test_page.html
-complete_oauth_test.html
-final_oauth_test.html
-oauth_solution.html
-direct_oauth_test.html
-index.html
-oauth_debug.html
+# SSH keys (sensitive)
+*.pem
+id_rsa*
+id_ed25519*
+deploy_key*

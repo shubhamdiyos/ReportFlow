@@ -60,11 +60,14 @@ jobs:
           export FRONTEND_URL="${{ secrets.FRONTEND_URL }}" && \
           export SPRING_PROFILES_ACTIVE=aws && \
           echo "🚀 Starting ReportFlow..." && \
-          timeout 20 java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
-          sleep 18 && \
+          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & \
+          sleep 20 && \
+          echo "=== Checking deployment status ===" && \
           if pgrep -f reportflow-backend > /dev/null; then \
             echo "✅ Deployment successful!"; \
             echo "🌐 http://65.1.106.112:8080"; \
+            echo "=== Application logs ==="; \
+            tail -10 app.log; \
           else \
             echo "❌ Deployment failed!"; \
             echo "=== Last 20 lines of app.log ==="; \

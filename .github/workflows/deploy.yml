@@ -24,47 +24,37 @@ jobs:
       run: mvn clean package -DskipTests
       
     - name: 📤 Upload JAR to EC2
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: 65.1.106.112
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
-        source: "report_backend/target/reportflow-backend-1.0.0.jar"
-        target: "~/app/"
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > deploy_key.pem
+        chmod 600 deploy_key.pem
+        scp -o StrictHostKeyChecking=no -i deploy_key.pem \
+          report_backend/target/reportflow-backend-1.0.0.jar \
+          ec2-user@65.1.106.112:~/app/
         
     - name: 🚀 Deploy on EC2
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: 65.1.106.112
-        username: ec2-user
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          cd ~/app
-          
-          # Stop existing app
-          pkill -f reportflow-backend || true
-          sleep 3
-          
-          # Start new app
-          export DATABASE_URL="jdbc:postgresql://localhost:5433/reportflow"
-          export DB_USERNAME="reportflow_user"
-          export DB_PASSWORD="reportflow_password"
-          export JWT_SECRET="${{ secrets.JWT_SECRET }}"
-          export GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}"
-          export GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}"
-          export FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
-          export SPRING_PROFILES_ACTIVE=aws
-          
-          echo "🚀 Starting ReportFlow..."
-          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 &
-          
-          sleep 10
-          
-          if pgrep -f reportflow-backend > /dev/null; then
-            echo "✅ Deployment successful!"
-            echo "🌐 http://65.1.106.112:8080"
-          else
-            echo "❌ Deployment failed!"
-            tail -20 app.log
-            exit 1
-          fi
+      run: |
+        echo "${{ secrets.EC2_SSH_KEY }}" > deploy_key.pem
+        chmod 600 deploy_key.pem
+        ssh -o StrictHostKeyChecking=no -i deploy_key.pem \
+          ec2-user@65.1.106.112 'cd ~/app && \
+          pkill -f reportflow-backend || true && \
+          sleep 3 && \
+          export DATABASE_URL="jdbc:postgresql://localhost:5433/reportflow" && \
+          export DB_USERNAME="reportflow_user" && \
+          export DB_PASSWORD="reportflow_password" && \
+          export JWT_SECRET="${{ secrets.JWT_SECRET }}" && \
+          export GITHUB_CLIENT_ID="${{ secrets.GITHUB_CLIENT_ID }}" && \
+          export GITHUB_CLIENT_SECRET="${{ secrets.GITHUB_CLIENT_SECRET }}" && \
+          export FRONTEND_URL="${{ secrets.FRONTEND_URL }}" && \
+          export SPRING_PROFILES_ACTIVE=aws && \
+          echo "🚀 Starting ReportFlow..." && \
+          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & && \
+          sleep 10 && \
+          if pgrep -f reportflow-backend > /dev/null; then \
+            echo "✅ Deployment successful!"; \
+            echo "🌐 http://65.1.106.112:8080"; \
+          else \
+            echo "❌ Deployment failed!"; \
+            tail -20 app.log; \
+            exit 1; \
+          fi'

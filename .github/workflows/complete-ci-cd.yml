@@ -32,7 +32,7 @@ jobs:
         distribution: 'temurin'
         
     - name: 📦 Cache Maven Dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.m2
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -60,7 +60,7 @@ jobs:
       run: mvn clean package -DskipTests
       
     - name: 📤 Upload Build Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: reportflow-jar
         path: report_backend/target/reportflow-backend-1.0.0.jar
@@ -101,7 +101,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: 📥 Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: reportflow-jar
         path: ./report_backend/target/
@@ -218,7 +218,7 @@ jobs:
     
     steps:
     - name: 📥 Download Build Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: reportflow-jar
         path: ./report_backend/target/

@@ -1,0 +1,292 @@
+name: ReportFlow Complete CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths: 
+      - 'report_backend/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main ]
+    paths: 
+      - 'report_backend/**'
+
+env:
+  PROJECT_NAME: ReportFlow Backend
+  MAVEN_OPTS: -Xmx1024m
+  JAVA_VERSION: '17'
+
+jobs:
+  # Build and Test Job
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: ☕ Set up Java ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        
+    - name: 📦 Cache Maven Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+          
+    - name: 🔍 Validate Maven Configuration
+      working-directory: ./report_backend
+      run: mvn validate
+      
+    - name: 🧪 Run Unit Tests
+      working-directory: ./report_backend
+      run: mvn clean test
+      
+    - name: 📊 Generate Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: Maven Tests
+        path: report_backend/target/surefire-reports/*.xml
+        reporter: java-junit
+        
+    - name: 🏗️ Build Application
+      working-directory: ./report_backend
+      run: mvn clean package -DskipTests
+      
+    - name: 📤 Upload Build Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: reportflow-jar
+        path: report_backend/target/reportflow-backend-1.0.0.jar
+        retention-days: 7
+
+  # Security Scan Job
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Run Trivy Vulnerability Scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+        
+    - name: 📤 Upload Trivy Scan Results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Deploy to AWS (Production)
+  deploy-production:
+    needs: [build-and-test, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      
+    - name: 📥 Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: reportflow-jar
+        path: ./report_backend/target/
+        
+    - name: 🚀 Deploy to AWS EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 300s
+        command_timeout: 120s
+        script: |
+          echo "🚀 Starting ReportFlow Deployment..."
+          
+          # Create deployment directory
+          mkdir -p ~/reportflow-deploy
+          cd ~/reportflow-deploy
+          
+          # Backup current version
+          if [ -f reportflow-backend-1.0.0.jar ]; then
+            cp reportflow-backend-1.0.0.jar reportflow-backend-1.0.0.jar.backup.$(date +%Y%m%d_%H%M%S)
+            echo "📦 Backed up current version"
+          fi
+          
+          # Stop existing application gracefully
+          echo "🛑 Stopping ReportFlow..."
+          pkill -f reportflow-backend || true
+          sleep 5
+          
+          # Wait for process to stop
+          while pgrep -f reportflow-backend > /dev/null; do
+            echo "⏳ Waiting for application to stop..."
+            sleep 2
+          done
+          
+          echo "✅ Application stopped"
+          
+          # The new JAR will be uploaded via SCP in the next step
+          
+    - name: 📤 Upload JAR to EC2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "report_backend/target/reportflow-backend-1.0.0.jar"
+        target: "~/reportflow-deploy/"
+        strip_components: 2
+        
+    - name: 🔄 Start Application
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        timeout: 300s
+        script: |
+          cd ~/reportflow-deploy
+          
+          echo "🚀 Starting ReportFlow Application..."
+          
+          # Start new version with environment variables
+          DATABASE_URL=jdbc:postgresql://localhost:5433/reportflow \
+          DB_USERNAME=reportflow_user \
+          DB_PASSWORD=reportflow_password \
+          SPRING_PROFILES_ACTIVE=aws \
+          AWS_BACKEND_URL=http://13.232.117.123:8080 \
+          FRONTEND_URL=http://13.232.117.123:3000 \
+          GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }} \
+          GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }} \
+          JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          nohup java -jar reportflow-backend-1.0.0.jar > deployment.log 2>&1 &
+          
+          # Get PID
+          APP_PID=$!
+          echo $APP_PID > app.pid
+          
+          echo "📱 Application started with PID: $APP_PID"
+          
+          # Wait for application to start
+          echo "⏳ Waiting for application to start..."
+          sleep 20
+          
+          # Health check
+          echo "Performing health check..."
+          for i in {1..10}; do
+            if curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
+              echo "Health check passed!"
+              echo "ReportFlow deployed successfully!"
+              echo "Application URL: http://65.1.106.112:8080"
+              echo "Health URL: http://65.1.106.112:8080/actuator/health"
+              break
+            else
+              echo "Health check attempt $i/10..."
+              sleep 5
+            fi
+          done
+          
+          # If health check failed, show logs
+          if ! curl -f http://localhost:8080/actuator/health > /dev/null 2>&1; then
+            echo "❌ Health check failed!"
+            echo "📋 Last 20 lines of deployment log:"
+            tail -20 deployment.log
+            exit 1
+          fi
+
+  # Deploy to Staging (Develop Branch)
+  deploy-staging:
+    needs: [build-and-test, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    environment: staging
+    
+    steps:
+    - name: 📥 Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: reportflow-jar
+        path: ./report_backend/target/
+        
+    - name: 🚀 Deploy to Staging
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          echo "🚀 Deploying to staging environment..."
+          mkdir -p ~/reportflow-staging
+          cd ~/reportflow-staging
+          
+          # Stop staging if running
+          pkill -f "reportflow-backend.*staging" || true
+          sleep 3
+          
+          # Copy new JAR (would be uploaded via SCP)
+          # Start staging with different port
+          DATABASE_URL=jdbc:postgresql://localhost:5433/reportflow_staging \
+          DB_USERNAME=reportflow_user \
+          DB_PASSWORD=reportflow_password \
+          SPRING_PROFILES_ACTIVE=staging \
+          SERVER_PORT=8081 \
+          nohup java -jar reportflow-backend-1.0.0.jar > staging.log 2>&1 &
+          
+          echo "🎯 Staging deployed on port 8081"
+
+  # Notification Job
+  notify:
+    needs: [build-and-test, security-scan, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: 📢 Deployment Status
+      run: |
+        echo "## 🚀 ReportFlow CI/CD Pipeline Status" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+          echo "✅ **Build & Test**: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Build & Test**: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.security-scan.result }}" == "success" ]; then
+          echo "✅ **Security Scan**: Passed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Security Scan**: Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+          echo "✅ **Production Deploy**: Success" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 Production URLs:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Application**: http://65.1.106.112:8080" >> $GITHUB_STEP_SUMMARY
+          echo "- **Health Check**: http://65.1.106.112:8080/actuator/health" >> $GITHUB_STEP_SUMMARY
+        elif [ "${{ needs.deploy-production.result }}" == "failure" ]; then
+          echo "❌ **Production Deploy**: Failed" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⏭️ **Production Deploy**: Skipped" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Pipeline Information:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Trigger**: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY

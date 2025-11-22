@@ -58,7 +58,7 @@ jobs:
           export FRONTEND_URL="${{ secrets.FRONTEND_URL }}" && \
           export SPRING_PROFILES_ACTIVE=aws && \
           echo "🚀 Starting ReportFlow..." && \
-          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 & && \
+          nohup java -jar reportflow-backend-1.0.0.jar > app.log 2>&1 &
           sleep 10 && \
           if pgrep -f reportflow-backend > /dev/null; then \
             echo "✅ Deployment successful!"; \

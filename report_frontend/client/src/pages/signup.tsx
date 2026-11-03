@@ -377,7 +377,7 @@ export default function Signup() {
               </div>
               <h2 className="text-3xl font-bold">Create Account</h2>
               <p className="mt-2 text-muted-foreground">
-                Join thousands of developers using ReportFlow
+                Replace manual reporting with one controlled system for your whole team
               </p>
             </motion.div>
 

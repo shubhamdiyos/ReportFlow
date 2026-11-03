@@ -12,7 +12,6 @@ import {
   Users, 
   GitPullRequest, 
   Star,
-  CheckCircle,
   Moon,
   Sun,
   ExternalLink,
@@ -20,40 +19,12 @@ import {
   TrendingUp,
   Shield,
   Zap,
-  Clock,
   Activity,
   Globe,
-  FileCheck,
-  Eye,
   UserCheck,
-  Timer,
   Database,
   Server
 } from "lucide-react";
-import { 
-  SiGoogle, 
-  SiApple, 
-  SiAmazon, 
-  SiGithub, 
-  SiSlack, 
-  SiSpotify, 
-  SiNetflix, 
-  SiUber,
-  SiStripe,
-  SiZoom,
-  SiMeta,
-  SiAdobe,
-  SiFigma,
-  SiNotion,
-  SiTesla,
-  SiSalesforce,
-  SiDropbox,
-  SiAtlassian,
-  SiCanva,
-  SiLinkedin,
-  SiDiscord,
-  SiTrello
-} from "react-icons/si";
 import { cn, motionVariants, createAdvancedStagger } from "@/lib/utils";
 import { useMotionPreferences } from "@/hooks/use-motion-preferences";
 
@@ -163,11 +134,11 @@ const features = [
   {
     icon: BarChart3,
     title: "Advanced Analytics",
-    description: "Deep insights into your GitHub repositories with AI-powered analysis"
+    description: "Deep insights into your GitHub repositories — commits, pull requests, reviews and team velocity"
   },
   {
     icon: Users,
-    title: "Team Collaboration",
+    title: "Team Analytics",
     description: "Seamlessly manage team performance and track contributions"
   },
   {
@@ -177,98 +148,46 @@ const features = [
   },
   {
     icon: Shield,
-    title: "Enterprise Security",
-    description: "Bank-level security with SOC 2 compliance and data encryption"
+    title: "Secure Access",
+    description: "Role-based access for three user types — admins, managers and developers — with secure GitHub OAuth login"
   }
 ];
 
-const testimonials = [
-  {
-    quote: "ReportFlow transformed how we track our development metrics. The insights are incredible.",
-    author: "Sarah Chen",
-    role: "CTO at TechCorp",
-    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b1db?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40"
-  },
-  {
-    quote: "Finally, a GitHub analytics tool that actually makes sense. Our team productivity is up 40%.",
-    author: "Marcus Rodriguez",
-    role: "Engineering Manager",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=40&h=40"
-  }
-];
 
-// Enhanced stats with ROI metrics and business impact
+
+// Verified results from the production ReportFlow deployment
 const enhancedStats = [
   {
-    value: 85,
-    displayValue: "85%",
-    label: "Faster Development",
-    description: "Time reduction in code reviews",
+    value: 40,
+    displayValue: "40%",
+    label: "Less Manual Processing",
+    description: "Manual processing time down 40% — the compile-and-email cycle is gone",
     icon: TrendingUp,
     color: "text-green-500",
     bgColor: "bg-green-500/10",
     progressColor: "bg-green-500",
     prefix: "",
     suffix: "%",
-    category: "performance"
+    category: "efficiency"
   },
   {
-    value: 20,
-    displayValue: "20h",
-    label: "Hours Saved Weekly",
-    description: "Per developer productivity gain",
-    icon: Clock,
+    value: 50,
+    displayValue: "50%",
+    label: "Faster Queries",
+    description: "Query performance up 50% on high-volume records",
+    icon: Database,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     progressColor: "bg-blue-500",
     prefix: "",
-    suffix: "h",
-    category: "time"
-  },
-  {
-    value: 300,
-    displayValue: "3x",
-    label: "Team Productivity",
-    description: "Increase in delivery velocity",
-    icon: Users,
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
-    progressColor: "bg-purple-500",
-    prefix: "",
-    suffix: "x",
-    category: "productivity"
-  },
-  {
-    value: 50000,
-    displayValue: "$50K",
-    label: "Cost Savings",
-    description: "Annual development cost reduction",
-    icon: TrendingUp,
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
-    progressColor: "bg-emerald-500",
-    prefix: "$",
-    suffix: "K",
-    category: "savings"
-  },
-  {
-    value: 98.7,
-    displayValue: "98.7%",
-    label: "Code Quality",
-    description: "Bug detection accuracy",
-    icon: Shield,
-    color: "text-cyan-500",
-    bgColor: "bg-cyan-500/10",
-    progressColor: "bg-cyan-500",
-    prefix: "",
     suffix: "%",
-    category: "quality"
+    category: "performance"
   },
   {
-    value: 99.9,
-    displayValue: "99.9%",
-    label: "Platform Uptime",
-    description: "Enterprise-grade reliability",
+    value: 99.8,
+    displayValue: "99.8%",
+    label: "Platform Availability",
+    description: "99.8% availability — reports are there when the team needs them",
     icon: Activity,
     color: "text-orange-500",
     bgColor: "bg-orange-500/10",
@@ -278,114 +197,71 @@ const enhancedStats = [
     category: "reliability"
   },
   {
-    value: 24,
-    displayValue: "24/7",
-    label: "Expert Support",
-    description: "Round-the-clock assistance",
-    icon: UserCheck,
-    color: "text-rose-500",
-    bgColor: "bg-rose-500/10",
-    progressColor: "bg-rose-500",
+    value: 3,
+    displayValue: "3",
+    label: "User Roles",
+    description: "Role-based access for three user types — each role sees only what it is meant to see",
+    icon: Users,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    progressColor: "bg-purple-500",
     prefix: "",
-    suffix: "/7",
-    category: "support"
-  },
-  {
-    value: 150,
-    displayValue: "150+",
-    label: "Enterprise Clients",
-    description: "Fortune 500 companies trust us",
-    icon: Globe,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
-    progressColor: "bg-indigo-500",
-    prefix: "",
-    suffix: "+",
-    category: "clients"
+    suffix: "",
+    category: "access"
   }
 ];
 
-// Social proof data
-const trustedCompanies = [
-  { icon: SiGoogle, name: "Google", color: "#4285F4" },
-  { icon: SiApple, name: "Apple", color: "#000000" },
-  { icon: SiAmazon, name: "Amazon", color: "#FF9900" },
-  { icon: SiGithub, name: "GitHub", color: "#181717" },
-  { icon: SiMeta, name: "Meta", color: "#0866FF" },
-  { icon: SiAdobe, name: "Adobe", color: "#FF0000" },
-  { icon: SiTesla, name: "Tesla", color: "#CC0000" },
-  { icon: SiSalesforce, name: "Salesforce", color: "#00A1E0" },
-  { icon: SiSlack, name: "Slack", color: "#4A154B" },
-  { icon: SiSpotify, name: "Spotify", color: "#1DB954" },
-  { icon: SiNetflix, name: "Netflix", color: "#E50914" },
-  { icon: SiUber, name: "Uber", color: "#000000" },
-  { icon: SiStripe, name: "Stripe", color: "#635BFF" },
-  { icon: SiZoom, name: "Zoom", color: "#2D8CFF" },
-  { icon: SiFigma, name: "Figma", color: "#F24E1E" },
-  { icon: SiNotion, name: "Notion", color: "#000000" },
-  { icon: SiDropbox, name: "Dropbox", color: "#0061FF" },
-  { icon: SiAtlassian, name: "Atlassian", color: "#0052CC" },
-  { icon: SiCanva, name: "Canva", color: "#00C4CC" },
-  { icon: SiLinkedin, name: "LinkedIn", color: "#0A66C2" },
-  { icon: SiDiscord, name: "Discord", color: "#5865F2" },
-  { icon: SiTrello, name: "Trello", color: "#0079BF" }
-];
-
+// Verified results from the production ReportFlow deployment
 const socialProofMetrics = [
   { 
     icon: Users, 
-    value: "50,127", 
-    label: "Developers",
-    suffix: "+",
-    description: "Active monthly users",
+    value: "3", 
+    label: "User Roles",
+    suffix: "",
+    description: "Role-based access for three user types",
     color: "text-blue-500"
   },
   { 
     icon: Activity, 
-    value: "2.3M", 
-    label: "Reports Generated",
-    suffix: "+",
-    description: "In the last 30 days",
+    value: "40", 
+    label: "Less Manual Processing",
+    suffix: "%",
+    description: "Manual processing time down 40%",
     color: "text-green-500"
   },
   { 
     icon: Database, 
-    value: "98.7", 
-    label: "Accuracy Rate",
+    value: "50", 
+    label: "Faster Queries",
     suffix: "%",
-    description: "AI-powered insights",
+    description: "Query performance up on high-volume records",
     color: "text-purple-500"
   },
   { 
     icon: Globe, 
-    value: "150", 
-    label: "Countries",
-    suffix: "+",
-    description: "Worldwide coverage",
+    value: "99.8", 
+    label: "Availability",
+    suffix: "%",
+    description: "Reports there when the team needs them",
     color: "text-orange-500"
   }
 ];
 
 const fastResultsIndicators = [
-  { icon: Timer, text: "Setup in 5 minutes", color: "text-green-500" },
-  { icon: Zap, text: "Results in 24 hours", color: "text-yellow-500" },
-  { icon: Clock, text: "Real-time updates", color: "text-blue-500" },
-  { icon: TrendingUp, text: "Instant insights", color: "text-purple-500" }
+  { icon: Users, text: "Three role-based user types", color: "text-green-500" },
+  { icon: Zap, text: "Real-time GitHub data sync", color: "text-yellow-500" },
+  { icon: Shield, text: "Secure OAuth login", color: "text-blue-500" },
+  { icon: Database, text: "Built for high-volume records", color: "text-purple-500" }
 ];
 
 const securityBadges = [
-  { icon: Shield, text: "SOC 2 Compliant", color: "text-blue-600" },
-  { icon: FileCheck, text: "GDPR Compliant", color: "text-green-600" },
-  { icon: UserCheck, text: "Enterprise Security", color: "text-purple-600" },
-  { icon: Server, text: "99.9% Uptime SLA", color: "text-orange-600" }
+  { icon: Shield, text: "Secure OAuth Login", color: "text-blue-600" },
+  { icon: UserCheck, text: "Role-Based Access", color: "text-green-600" },
+  { icon: Users, text: "Three User Types", color: "text-purple-600" },
+  { icon: Server, text: "99.8% Availability", color: "text-orange-600" }
 ];
 
-const recentActivity = [
-  { action: "Repository analyzed", user: "TechCorp", time: "2 minutes ago", icon: Eye },
-  { action: "Report generated", user: "StartupXYZ", time: "5 minutes ago", icon: FileCheck },
-  { action: "Team invited", user: "DevTeam", time: "8 minutes ago", icon: Users },
-  { action: "Insights delivered", user: "Enterprise", time: "12 minutes ago", icon: TrendingUp }
-];
+
 
 export default function Landing() {
   const { theme, toggleTheme } = useTheme();
@@ -739,7 +615,7 @@ export default function Landing() {
           <motion.div variants={heroItemVariants}>
             <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium">
               <Sparkles className="w-5 h-5 mr-2" />
-              Now with AI-powered insights
+              Now with real-time GitHub data sync
             </Badge>
           </motion.div>
 
@@ -758,7 +634,7 @@ export default function Landing() {
             className="text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-16 lg:mb-20 max-w-4xl mx-auto leading-relaxed"
             variants={heroItemVariants}
           >
-            Transform your development workflow with enterprise-grade analytics, 
+            Transform your development workflow with organization-wide analytics, 
             team insights, and automated reporting that scales with your organization.
           </motion.p>
 
@@ -1489,59 +1365,6 @@ export default function Landing() {
         </motion.div>
 
         <div className="max-w-7xl mx-auto relative z-10">
-          {/* Trusted Companies */}
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            viewport={{ once: true }}
-          >
-            <motion.p 
-              className="text-sm font-medium text-muted-foreground/80 uppercase tracking-wide mb-8"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              Trusted by teams at
-            </motion.p>
-            
-            <motion.div 
-              className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-6 lg:gap-8 items-center justify-center"
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              {trustedCompanies.map((company, index) => (
-                <motion.div
-                  key={`company-${company.name.toLowerCase()}-${index}`}
-                  className="flex items-center justify-center group cursor-pointer"
-                  variants={heroItemVariants}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                  data-testid={`company-logo-${company.name.toLowerCase()}`}
-                >
-                  <motion.div
-                    className="p-4 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-lg"
-                    whileHover={{ 
-                      backgroundColor: "hsl(var(--primary) / 0.05)",
-                      borderColor: company.color + "40"
-                    }}
-                  >
-                    <company.icon 
-                      className="w-6 h-6 md:w-7 md:h-7 text-muted-foreground group-hover:text-foreground transition-colors duration-300"
-                      style={{
-                        color: theme === 'dark' ? undefined : company.color
-                      }}
-                    />
-                  </motion.div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
           {/* User Count and Social Proof Metrics */}
           <motion.div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"
@@ -1635,7 +1458,7 @@ export default function Landing() {
                     viewport={{ once: true }}
                   >
                     <Zap className="w-5 h-5 text-yellow-500 mr-2" />
-                    Lightning Fast Results
+                    What ReportFlow Does
                   </motion.h3>
                   
                   <div className="space-y-4">
@@ -1684,7 +1507,7 @@ export default function Landing() {
                     viewport={{ once: true }}
                   >
                     <Shield className="w-5 h-5 text-green-500 mr-2" />
-                    Enterprise Security
+                    Access & Security
                   </motion.h3>
                   
                   <div className="space-y-4">
@@ -1717,97 +1540,10 @@ export default function Landing() {
             </motion.div>
           </div>
 
-          {/* Recent Activity Feed */}
-          <motion.div
-            className="max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <motion.div
-              className="text-center mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="text-xl font-semibold mb-2 flex items-center justify-center">
-                <Activity className="w-5 h-5 text-primary mr-2" />
-                Live Activity
-              </h3>
-              <p className="text-sm text-muted-foreground">See what's happening right now</p>
-            </motion.div>
-
-            <Card className="border-border/50 bg-background/40 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <motion.div
-                      key={`activity-${activity.action.replace(/\s+/g, '-').toLowerCase()}-${index}`}
-                      className="flex items-center justify-between py-3 px-4 rounded-lg bg-background/50 border border-border/30 group hover:border-primary/30 transition-all duration-300"
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ delay: index * 0.1 + 0.5, duration: 0.5 }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      data-testid={`activity-${activity.action.replace(/\s+/g, '-').toLowerCase()}`}
-                    >
-                      <div className="flex items-center">
-                        <motion.div
-                          className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-3"
-                          whileHover={{ scale: 1.1, rotate: 10 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <activity.icon className="w-4 h-4 text-primary" />
-                        </motion.div>
-                        
-                        <div>
-                          <motion.span 
-                            className="text-sm font-medium text-foreground"
-                            animate={shouldReduceMotion ? {} : {
-                              opacity: [1, 0.8, 1]
-                            }}
-                            transition={shouldReduceMotion ? {} : {
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                              delay: index * 0.3
-                            }}
-                          >
-                            {activity.action}
-                          </motion.span>
-                          <span className="text-sm text-muted-foreground ml-1">
-                            by {activity.user}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <motion.div
-                        className="text-xs text-muted-foreground flex items-center"
-                        animate={shouldReduceMotion ? {} : {
-                          scale: [1, 1.05, 1]
-                        }}
-                        transition={shouldReduceMotion ? {} : {
-                          duration: 4,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                          delay: index * 0.5
-                        }}
-                      >
-                        <Clock className="w-3 h-3 mr-1" />
-                        {activity.time}
-                      </motion.div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </section>
 
-      {/* Enhanced Stats Section with ROI Metrics */}
+      {/* Results Section */}
       <section className="px-6 lg:px-8 py-24 bg-gradient-to-br from-background via-background to-muted/20">
         <motion.div 
           className="max-w-7xl mx-auto"
@@ -1822,10 +1558,10 @@ export default function Landing() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-purple-600 bg-clip-text text-transparent">
-              Proven Business Impact
+              The Results
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Join thousands of teams already experiencing measurable results and ROI improvements
+              What changed when manual reporting was replaced by one controlled system
             </p>
           </motion.div>
 
@@ -2174,139 +1910,6 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* Testimonials */}
-      <section className="px-6 lg:px-8 py-24 bg-muted/30 relative overflow-hidden">
-        {/* Parallax background elements */}
-        <motion.div 
-          className="absolute inset-0 opacity-10"
-          style={{ y: y3 }}
-        >
-          <div className="absolute top-10 left-10 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
-          <div className="absolute bottom-20 right-20 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl" />
-        </motion.div>
-        
-        <div className="max-w-6xl mx-auto relative z-10">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-            viewport={{ once: true }}
-          >
-            <motion.h2 
-              className="text-3xl md:text-5xl font-bold mb-6"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              Loved by developers worldwide
-            </motion.h2>
-            
-            {/* Decorative elements */}
-            <motion.div
-              className="flex justify-center gap-2 mt-4"
-              initial={{ opacity: 0, scale: 0 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.5, type: "spring" }}
-              viewport={{ once: true }}
-            >
-              {[...Array(5)].map((_, i) => (
-                <motion.div
-                  key={`testimonial-star-${i}`}
-                  animate={shouldReduceMotion ? {} : {
-                    rotate: [0, 10, 0],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={shouldReduceMotion ? {} : {
-                    duration: 2,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={`testimonial-${testimonial.author.replace(/\s+/g, '-').toLowerCase()}-${index}`}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  delay: index * 0.2, 
-                  duration: 0.7,
-                  ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-                viewport={{ once: true }}
-                whileHover={{ scale: 1.02, y: -4 }}
-              >
-                <motion.div
-                  variants={motionVariants.cardHoverAdvanced}
-                  initial="rest"
-                  whileHover="hover"
-                  className="relative"
-                >
-                  <Card className="bg-card/50 backdrop-blur-sm border-border/50 relative overflow-hidden group">
-                    {/* Quote decoration */}
-                    <motion.div
-                      className="absolute top-4 right-4 text-6xl text-primary/10 leading-none"
-                      animate={shouldReduceMotion ? {} : { rotate: [0, 5, 0] }}
-                      transition={shouldReduceMotion ? {} : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    >
-                      "
-                    </motion.div>
-                    
-                    {/* Subtle glow effect */}
-                    <motion.div
-                      className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 via-transparent to-purple-500/10 rounded-lg opacity-0"
-                      whileHover={{ opacity: 1 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                    
-                    <CardContent className="p-8 relative z-10">
-                      <div className="flex items-start gap-4">
-                        <motion.img
-                          src={testimonial.avatar}
-                          alt={testimonial.author}
-                          className="w-12 h-12 rounded-full ring-2 ring-primary/20"
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                          transition={{ duration: 0.3, ease: "easeOut" }}
-                        />
-                        <div className="flex-1">
-                          <motion.p 
-                            className="text-lg mb-4 leading-relaxed"
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: index * 0.2 + 0.3, duration: 0.6 }}
-                            viewport={{ once: true }}
-                          >
-                            "{testimonial.quote}"
-                          </motion.p>
-                          <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.2 + 0.5, duration: 0.5 }}
-                            viewport={{ once: true }}
-                          >
-                            <div className="font-semibold">{testimonial.author}</div>
-                            <div className="text-muted-foreground text-sm">{testimonial.role}</div>
-                          </motion.div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="px-6 lg:px-8 py-24 relative overflow-hidden">
         {/* Enhanced background with parallax */}
@@ -2371,7 +1974,7 @@ export default function Landing() {
             transition={{ delay: 0.4, duration: 0.6 }}
             viewport={{ once: true }}
           >
-            Join thousands of development teams already using ReportFlow to build better software faster.
+            ReportFlow replaces manual reporting with a single, controlled system — so your team works from the same live data instead of emailed files.
           </motion.p>
           
           <motion.div 
